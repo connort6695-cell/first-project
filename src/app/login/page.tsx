@@ -38,8 +38,9 @@ export default function LoginPage() {
       });
       if (authError) throw authError;
       setNotice("Check your inbox for the login link.");
-    } catch (err: any) {
-      setError(err?.message ?? "Failed to send magic link");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to send magic link";
+      setError(message);
     } finally {
       setIsSending(false);
     }

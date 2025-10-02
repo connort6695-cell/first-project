@@ -1,6 +1,8 @@
 import type { Config } from "tailwindcss";
 
-import daisyui from "daisyui";
+// DaisyUI v4 works with Tailwind v3
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const daisyui = require("daisyui");
 
 const config: Config = {
 	content: [
