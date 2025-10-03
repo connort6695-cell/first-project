@@ -1,10 +1,11 @@
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="space-y-6">
-      <Card title="Welcome to your app" actions={<Button>Get started</Button>}>
+      <Card title="Welcome to your app" actions={<Link href="/login"><Button>Get started</Button></Link>}>
         <p>Next.js + Tailwind CSS + DaisyUI is configured.</p>
       </Card>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
