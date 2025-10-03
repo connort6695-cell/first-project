@@ -2,11 +2,14 @@ import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import Link from "next/link";
 import AuthExchange from "@/components/AuthExchange";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
     <div className="space-y-6">
-      <AuthExchange />
+      <Suspense fallback={null}>
+        <AuthExchange />
+      </Suspense>
       <Card title="Welcome to your app" actions={<Link href="/login"><Button>Get started</Button></Link>}>
         <p>Next.js + Tailwind CSS + DaisyUI is configured.</p>
       </Card>
