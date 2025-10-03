@@ -13,6 +13,8 @@ export default function AuthExchange() {
   const router = useRouter();
   const params = useSearchParams();
   const [status, setStatus] = useState<string>("");
+  
+  console.log("AuthExchange component mounted");
 
   useEffect(() => {
     const code = params.get("code");
