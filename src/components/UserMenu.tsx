@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export function UserMenu() {
   const supabase = getSupabaseBrowserClient();
@@ -20,7 +21,7 @@ export function UserMenu() {
       if (!isMounted) return;
       setEmail(data.user?.email ?? null);
     })();
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       setEmail(session?.user?.email ?? null);
     });
     return () => {
