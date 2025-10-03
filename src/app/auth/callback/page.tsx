@@ -22,8 +22,16 @@ export default function AuthCallbackPage() {
 
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.auth.getSession();
+      // Exchange the auth code from the magic-link for a session
+      const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
       if (cancelled) return;
+      if (error) {
+        setMessage("Sign-in failed. Redirecting to login...");
+        setTimeout(() => router.replace("/login"), 1200);
+        return;
+      }
+      // Double-check session then redirect
+      const { data } = await supabase.auth.getSession();
       if (data.session) {
         router.replace("/dashboard");
       } else {
