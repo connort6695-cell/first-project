@@ -15,10 +15,11 @@ export function UserMenu() {
   useEffect(() => {
     if (!supabase) return;
     let isMounted = true;
-    supabase.auth.getUser().then(({ data }) => {
+    (async () => {
+      const { data } = await supabase.auth.getUser();
       if (!isMounted) return;
       setEmail(data.user?.email ?? null);
-    });
+    })();
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setEmail(session?.user?.email ?? null);
     });
