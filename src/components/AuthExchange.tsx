@@ -16,11 +16,14 @@ export default function AuthExchange() {
 
   useEffect(() => {
     const code = params.get("code");
+    console.log("AuthExchange: code =", code);
     if (!code) return;
     
     setStatus("Processing magic link...");
+    console.log("AuthExchange: Processing magic link");
     
     const supabase = getSupabaseBrowserClient();
+    console.log("AuthExchange: supabase client =", supabase ? "available" : "null");
     if (!supabase) {
       setStatus("Error: Supabase not configured. Check environment variables.");
       return;
@@ -29,14 +32,18 @@ export default function AuthExchange() {
     (async () => {
       try {
         setStatus("Exchanging code for session...");
+        console.log("AuthExchange: Exchanging code for session");
         const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
         if (error) {
+          console.error("AuthExchange: Error exchanging code:", error);
           setStatus(`Error: ${error.message}`);
         } else {
+          console.log("AuthExchange: Success, redirecting to dashboard");
           setStatus("Success! Redirecting to dashboard...");
           router.replace("/dashboard");
         }
       } catch (err) {
+        console.error("AuthExchange: Exception:", err);
         setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     })();
