@@ -60,15 +60,18 @@ export function MagicLinkHandler() {
     })();
   }, [params, router, isProcessing]);
 
-  // Only show status if we have a code
+  // Always show for debugging
   const code = params.get("code");
-  if (!code) return null;
+  console.log("MagicLinkHandler render: code =", code, "URL =", window.location.href);
 
   return (
     <div className="fixed top-4 right-4 bg-base-100 p-4 rounded-lg shadow-lg border z-50 max-w-sm">
       <p className="text-sm font-medium">Magic Link Handler</p>
-      <p className="text-xs text-gray-600">Code: {code.substring(0, 8)}...</p>
-      <p className="text-sm">{status}</p>
+      <p className="text-xs text-gray-600">
+        {code ? `Code: ${code.substring(0, 8)}...` : "No code detected"}
+      </p>
+      <p className="text-xs text-gray-500">URL: {window.location.href}</p>
+      <p className="text-sm">{status || "Ready"}</p>
     </div>
   );
 }
