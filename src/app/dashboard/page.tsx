@@ -43,7 +43,7 @@ export default async function DashboardPage() {
           <h2 className="card-title">Notes</h2>
           {loadError ? (
             <div className="alert alert-warning">
-              {loadError}. If the table doesn't exist, create it in Supabase:
+              {loadError}. If the table doesn&apos;t exist, create it in Supabase:
               <code className="ml-2">create table notes (id uuid primary key default gen_random_uuid(), title text, created_at timestamptz default now());</code>
             </div>
           ) : notes.length === 0 ? (
