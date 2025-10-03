@@ -14,14 +14,26 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
-    supabase.auth.getSession().then(({ data }) => {
+    if (!supabase) {
+      setMessage("Unable to initialize auth. Redirecting to login...");
+      const id = setTimeout(() => router.replace("/login"), 800);
+      return () => clearTimeout(id);
+    }
+
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
       if (data.session) {
         router.replace("/dashboard");
       } else {
         setMessage("No session found. Redirecting to login...");
         setTimeout(() => router.replace("/login"), 1200);
       }
-    });
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   return (
@@ -30,5 +42,8 @@ export default function AuthCallbackPage() {
     </div>
   );
 }
+
+
+
 
 
