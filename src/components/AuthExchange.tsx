@@ -51,11 +51,16 @@ export default function AuthExchange() {
 
   // Show status if there's a code parameter
   const code = params.get("code");
-  if (!code) return null;
+  console.log("AuthExchange render: code =", code, "status =", status);
+  
+  if (!code) {
+    console.log("AuthExchange: No code, returning null");
+    return null;
+  }
 
   return (
     <div className="fixed top-4 right-4 bg-base-100 p-4 rounded-lg shadow-lg border z-50">
-      <p className="text-sm">{status}</p>
+      <p className="text-sm">AuthExchange Active: {status || "Initializing..."}</p>
     </div>
   );
 }
