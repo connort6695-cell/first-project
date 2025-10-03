@@ -9,7 +9,12 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function TestSupabase() {
   const [status, setStatus] = useState<string>("Testing...");
-  const [envVars, setEnvVars] = useState<any>({});
+  const [envVars, setEnvVars] = useState<{
+    url: string;
+    key: string;
+    urlValue?: string;
+    keyValue?: string;
+  }>({ url: "", key: "" });
 
   useEffect(() => {
     // Check environment variables
