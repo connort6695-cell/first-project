@@ -18,7 +18,7 @@ export default function AuthExchange() {
 
   useEffect(() => {
     const code = params.get("code");
-    console.log("AuthExchange: code =", code);
+    console.log("AuthExchange useEffect: code =", code, "URL =", window.location.href);
     if (!code) return;
     
     setStatus("Processing magic link...");
@@ -34,7 +34,7 @@ export default function AuthExchange() {
     (async () => {
       try {
         setStatus("Exchanging code for session...");
-        console.log("AuthExchange: Exchanging code for session");
+        console.log("AuthExchange: Exchanging code for session, URL =", window.location.href);
         const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
         if (error) {
           console.error("AuthExchange: Error exchanging code:", error);
@@ -42,7 +42,10 @@ export default function AuthExchange() {
         } else {
           console.log("AuthExchange: Success, redirecting to dashboard");
           setStatus("Success! Redirecting to dashboard...");
-          router.replace("/dashboard");
+          // Add a small delay to see the success message
+          setTimeout(() => {
+            router.replace("/dashboard");
+          }, 1000);
         }
       } catch (err) {
         console.error("AuthExchange: Exception:", err);
