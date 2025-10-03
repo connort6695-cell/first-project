@@ -3,7 +3,8 @@
  * Purpose: Provide a typed Supabase client for client components
  * Location: src/lib/supabase/client.ts
  */
-import { createBrowserClient, type SupabaseClient as SupabaseJsClient } from "@supabase/ssr";
+import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient as SupabaseJsClient } from "@supabase/supabase-js";
 
 export function getSupabaseBrowserClient(): SupabaseJsClient | null {
 	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
