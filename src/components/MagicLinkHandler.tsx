@@ -5,23 +5,27 @@
  * Location: src/components/MagicLinkHandler.tsx
  */
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function MagicLinkHandler() {
   const router = useRouter();
-  const params = useSearchParams();
   const [status, setStatus] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [code, setCode] = useState<string | null>(null);
 
   // Basic mount test
   console.log("MagicLinkHandler component mounted");
 
   useEffect(() => {
-    const code = params.get("code");
-    console.log("MagicLinkHandler: code =", code, "URL =", window.location.href);
+    // Get code from URL directly instead of useSearchParams
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCode = urlParams.get("code");
+    setCode(urlCode);
     
-    if (!code || isProcessing) return;
+    console.log("MagicLinkHandler: code =", urlCode, "URL =", window.location.href);
+    
+    if (!urlCode || isProcessing) return;
     
     setIsProcessing(true);
     setStatus("Processing magic link...");
@@ -61,10 +65,9 @@ export function MagicLinkHandler() {
         setIsProcessing(false);
       }
     })();
-  }, [params, router, isProcessing]);
+  }, [router, isProcessing]);
 
   // Always show for debugging
-  const code = params.get("code");
   console.log("MagicLinkHandler render: code =", code, "URL =", window.location.href);
 
   return (
