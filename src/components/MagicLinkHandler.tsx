@@ -14,6 +14,9 @@ export function MagicLinkHandler() {
   const [status, setStatus] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Basic mount test
+  console.log("MagicLinkHandler component mounted");
+
   useEffect(() => {
     const code = params.get("code");
     console.log("MagicLinkHandler: code =", code, "URL =", window.location.href);
