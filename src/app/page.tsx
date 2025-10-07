@@ -1,10 +1,15 @@
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import Link from "next/link";
+import { Suspense } from "react";
+import { MagicLinkHandler } from "@/components/MagicLinkHandler";
 
 export default function Home() {
   return (
     <div className="space-y-6">
+      <Suspense fallback={null}>
+        <MagicLinkHandler />
+      </Suspense>
       <Card title="Welcome to your app" actions={<Link href="/login"><Button>Get started</Button></Link>}>
         <p>Next.js + Tailwind CSS + DaisyUI is configured.</p>
       </Card>

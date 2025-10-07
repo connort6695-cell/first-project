@@ -37,12 +37,23 @@ export function MagicLinkHandler() {
     
     (async () => {
       try {
+        // Check if already signed in
+        const existing = await supabase.auth.getSession();
+        if (existing.data.session) {
+          setStatus("Already signed in! Redirecting to dashboard...");
+          window.history.replaceState({}, document.title, window.location.pathname);
+          router.replace("/dashboard");
+          return;
+        }
+
         setStatus("Exchanging code for session...");
         
         const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
         
         if (error) {
           setStatus(`Error: ${error.message}`);
+          // Clean URL on error
+          window.history.replaceState({}, document.title, window.location.pathname);
         } else {
           setStatus("Success! Redirecting to dashboard...");
           
@@ -52,6 +63,8 @@ export function MagicLinkHandler() {
         }
       } catch (err) {
         setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        // Clean URL on error
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     })();
   }, [router]);
