@@ -5,16 +5,19 @@
  * Location: src/app/redirect/page.tsx
  */
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function RedirectPage() {
   const router = useRouter();
-  const params = useSearchParams();
   const [status, setStatus] = useState<string>("Processing magic link...");
 
   useEffect(() => {
-    const code = params.get("code");
+    // Only run on client
+    if (typeof window === "undefined") return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
     if (!code) {
       setStatus("No code found, redirecting to home...");
       router.replace("/");
@@ -31,7 +34,7 @@ export default function RedirectPage() {
       try {
         setStatus("Exchanging code for session...");
         
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
         
         if (error) {
           setStatus(`Error: ${error.message}`);
@@ -45,7 +48,7 @@ export default function RedirectPage() {
         setTimeout(() => router.replace("/"), 3000);
       }
     })();
-  }, [params, router]);
+  }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
