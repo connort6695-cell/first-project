@@ -4,13 +4,14 @@
  * Purpose: Handle magic link authentication and redirect to dashboard
  * Location: src/app/redirect/page.tsx
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function RedirectPage() {
   const router = useRouter();
   const [status, setStatus] = useState<string>("Processing magic link...");
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
     // Only run on client
@@ -23,6 +24,10 @@ export default function RedirectPage() {
       router.replace("/");
       return;
     }
+
+    // Prevent multiple executions
+    if (hasProcessed.current) return;
+    hasProcessed.current = true;
 
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
