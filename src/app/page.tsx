@@ -12,6 +12,9 @@ export default function Home() {
         <SupabaseTest />
         <MagicLinkHandler />
       </Suspense>
+      <div className="alert alert-info">
+        <p className="text-sm">Current URL: {typeof window !== 'undefined' ? window.location.href : 'SSR'}</p>
+      </div>
       <Card title="Welcome to your app" actions={<Link href="/login"><Button>Get started</Button></Link>}>
         <p>Next.js + Tailwind CSS + DaisyUI is configured.</p>
       </Card>

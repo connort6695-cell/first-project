@@ -27,6 +27,7 @@ export function MagicLinkHandler() {
     setCode(urlCode);
     
     console.log("MagicLinkHandler: code =", urlCode, "URL =", window.location.href);
+    console.log("MagicLinkHandler: search params =", window.location.search);
     
     if (!urlCode || isProcessing) return;
     
