@@ -4,15 +4,17 @@
  * Purpose: Handle magic link authentication directly in the page
  * Location: src/components/MagicLinkHandler.tsx
  */
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+
+// Global flag to prevent multiple executions
+let isProcessing = false;
 
 export function MagicLinkHandler() {
   const router = useRouter();
   const [status, setStatus] = useState<string>("");
   const [code, setCode] = useState<string | null>(null);
-  const hasProcessed = useRef(false);
 
   useEffect(() => {
     // Only run on client side
@@ -23,15 +25,16 @@ export function MagicLinkHandler() {
     const urlCode = urlParams.get("code");
     setCode(urlCode);
     
-    // Only process once
-    if (!urlCode || hasProcessed.current) return;
+    // Only process once globally
+    if (!urlCode || isProcessing) return;
     
-    hasProcessed.current = true;
+    isProcessing = true;
     setStatus("Processing magic link...");
     
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
       setStatus("Error: Supabase not configured");
+      isProcessing = false;
       return;
     }
     
@@ -65,9 +68,11 @@ export function MagicLinkHandler() {
         setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
         // Clean URL on error
         window.history.replaceState({}, document.title, window.location.pathname);
+      } finally {
+        isProcessing = false;
       }
     })();
-  }, [router]);
+  }, []); // Empty dependency array - only run once
 
   // Only show if we have a code
   if (!code) return null;
