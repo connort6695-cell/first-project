@@ -18,6 +18,9 @@ export function MagicLinkHandler() {
   console.log("MagicLinkHandler component mounted");
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     // Get code from URL directly instead of useSearchParams
     const urlParams = new URLSearchParams(window.location.search);
     const urlCode = urlParams.get("code");
@@ -68,7 +71,8 @@ export function MagicLinkHandler() {
   }, [router, isProcessing]);
 
   // Always show for debugging
-  console.log("MagicLinkHandler render: code =", code, "URL =", window.location.href);
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'SSR';
+  console.log("MagicLinkHandler render: code =", code, "URL =", currentUrl);
 
   return (
     <div className="fixed top-4 right-4 bg-base-100 p-4 rounded-lg shadow-lg border z-50 max-w-sm">
@@ -76,7 +80,7 @@ export function MagicLinkHandler() {
       <p className="text-xs text-gray-600">
         {code ? `Code: ${code.substring(0, 8)}...` : "No code detected"}
       </p>
-      <p className="text-xs text-gray-500">URL: {window.location.href}</p>
+      <p className="text-xs text-gray-500">URL: {currentUrl}</p>
       <p className="text-sm">{status || "Ready"}</p>
     </div>
   );
