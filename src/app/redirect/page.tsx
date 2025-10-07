@@ -99,6 +99,7 @@ export default function RedirectPage() {
           <div className="card-actions justify-center">
             <div className="loading loading-spinner loading-md"></div>
           </div>
+          <p className="text-xs text-gray-500 mt-2">Redirect page v2</p>
         </div>
       </div>
     </div>
