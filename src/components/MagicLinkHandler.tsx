@@ -48,14 +48,18 @@ export function MagicLinkHandler() {
       try {
         setStatus("Exchanging code for session...");
         console.log("MagicLinkHandler: Exchanging code for session");
+        console.log("MagicLinkHandler: Full URL =", window.location.href);
         
-        const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        
+        console.log("MagicLinkHandler: Response data =", data);
+        console.log("MagicLinkHandler: Response error =", error);
         
         if (error) {
           console.error("MagicLinkHandler: Error:", error);
           setStatus(`Error: ${error.message}`);
         } else {
-          console.log("MagicLinkHandler: Success!");
+          console.log("MagicLinkHandler: Success! Session =", data.session);
           setStatus("Success! Redirecting to dashboard...");
           
           // Clean up URL and redirect
