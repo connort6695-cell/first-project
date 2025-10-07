@@ -40,9 +40,14 @@ export default function LoginPage() {
         return;
       }
       if (mode === "signUp") {
-        const { error: signUpError } = await supabase.auth.signUp({ email, password });
+        const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
         if (signUpError) throw signUpError;
-        setNotice("Account created. Check your email to confirm, then sign in.");
+        
+        if (data.user && !data.user.email_confirmed_at) {
+          setNotice("Account created! Check your email to confirm your account, then sign in.");
+        } else {
+          setNotice("Account created! You can now sign in.");
+        }
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
