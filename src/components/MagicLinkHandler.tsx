@@ -27,16 +27,28 @@ export function MagicLinkHandler() {
     setCode(urlCode);
     
     console.log("MagicLinkHandler: code =", urlCode, "URL =", window.location.href);
-    console.log("MagicLinkHandler: search params =", window.location.search);
     
-    if (!urlCode || isProcessing) return;
+    if (!urlCode) return;
+    
+    // Check if we already have a session
+    const supabase = getSupabaseBrowserClient();
+    if (supabase) {
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          console.log("MagicLinkHandler: Already have session, redirecting to dashboard");
+          setStatus("Already signed in! Redirecting to dashboard...");
+          window.history.replaceState({}, document.title, window.location.pathname);
+          router.replace("/dashboard");
+          return;
+        }
+      });
+    }
+    
+    if (isProcessing) return;
     
     setIsProcessing(true);
     setStatus("Processing magic link...");
     console.log("MagicLinkHandler: Processing magic link");
-    
-    const supabase = getSupabaseBrowserClient();
-    console.log("MagicLinkHandler: supabase client =", supabase ? "available" : "null");
     
     if (!supabase) {
       setStatus("Error: Supabase not configured");
@@ -48,7 +60,6 @@ export function MagicLinkHandler() {
       try {
         setStatus("Exchanging code for session...");
         console.log("MagicLinkHandler: Exchanging code for session");
-        console.log("MagicLinkHandler: Full URL =", window.location.href);
         
         const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
         
