@@ -37,7 +37,7 @@ export default function LoginPage() {
         setError("Auth not initialized. Please refresh and try again.");
         return;
       }
-      const redirectTo = `${window.location.origin}/auth/callback`;
+      const redirectTo = `${window.location.origin}/redirect`;
       const { error: authError } = await supabase.auth.signInWithOtp({
         email,
         options: { emailRedirectTo: redirectTo },
