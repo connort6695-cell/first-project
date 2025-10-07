@@ -8,8 +8,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-// Global flag to prevent multiple executions
+// Global state to prevent multiple executions
 let isProcessing = false;
+let hasProcessed = false;
 
 export function MagicLinkHandler() {
   const router = useRouter();
@@ -26,9 +27,10 @@ export function MagicLinkHandler() {
     setCode(urlCode);
     
     // Only process once globally
-    if (!urlCode || isProcessing) return;
+    if (!urlCode || isProcessing || hasProcessed) return;
     
     isProcessing = true;
+    hasProcessed = true;
     setStatus("Processing magic link...");
     
     const supabase = getSupabaseBrowserClient();
@@ -51,14 +53,23 @@ export function MagicLinkHandler() {
 
         setStatus("Exchanging code for session...");
         
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        // Use the full URL with all parameters
+        const fullUrl = window.location.href;
+        console.log("MagicLinkHandler: Full URL =", fullUrl);
+        
+        const { data, error } = await supabase.auth.exchangeCodeForSession(fullUrl);
+        
+        console.log("MagicLinkHandler: Response data =", data);
+        console.log("MagicLinkHandler: Response error =", error);
         
         if (error) {
           setStatus(`Error: ${error.message}`);
+          console.error("MagicLinkHandler: Auth error:", error);
           // Clean URL on error
           window.history.replaceState({}, document.title, window.location.pathname);
         } else {
           setStatus("Success! Redirecting to dashboard...");
+          console.log("MagicLinkHandler: Success! Session =", data.session);
           
           // Clean up URL and redirect
           window.history.replaceState({}, document.title, window.location.pathname);
@@ -66,6 +77,7 @@ export function MagicLinkHandler() {
         }
       } catch (err) {
         setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        console.error("MagicLinkHandler: Exception:", err);
         // Clean URL on error
         window.history.replaceState({}, document.title, window.location.pathname);
       } finally {
