@@ -17,10 +17,13 @@ export default function RedirectPage() {
     // Only run on client
     if (typeof window === "undefined") return;
 
+    const fullUrl = window.location.href;
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
     if (!code) {
       setStatus("No code found, redirecting to home...");
+      // Clean URL just in case, then go home
+      window.history.replaceState({}, document.title, window.location.pathname);
       router.replace("/");
       return;
     }
@@ -37,11 +40,29 @@ export default function RedirectPage() {
 
     (async () => {
       try {
+        // If this code was already processed, skip
+        const lastCode = window.localStorage.getItem("last_code_processed");
+        if (lastCode === code) {
+          setStatus("Already processed. Redirecting to dashboard...");
+          window.history.replaceState({}, document.title, window.location.pathname);
+          router.replace("/dashboard");
+          return;
+        }
+
+        // If already signed in, skip exchange
+        const existing = await supabase.auth.getSession();
+        if (existing.data.session) {
+          setStatus("Already signed in. Redirecting to dashboard...");
+          window.history.replaceState({}, document.title, window.location.pathname);
+          router.replace("/dashboard");
+          return;
+        }
+
         setStatus("Exchanging code for session...");
         console.log("Redirect page: Processing code =", code);
-        console.log("Redirect page: Full URL =", window.location.href);
+        console.log("Redirect page: Full URL =", fullUrl);
         
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        const { data, error } = await supabase.auth.exchangeCodeForSession(fullUrl);
         
         console.log("Redirect page: Response data =", data);
         console.log("Redirect page: Response error =", error);
@@ -49,16 +70,22 @@ export default function RedirectPage() {
         if (error) {
           setStatus(`Error: ${error.message}`);
           console.error("Redirect page: Auth error:", error);
-          setTimeout(() => router.replace("/"), 3000);
+          // Clean URL to avoid repeated attempts, then send to login
+          window.history.replaceState({}, document.title, window.location.pathname);
+          setTimeout(() => router.replace("/login"), 1500);
         } else {
           setStatus("Success! Redirecting to dashboard...");
           console.log("Redirect page: Success! Session =", data.session);
+          // Mark code as processed and clean URL
+          window.localStorage.setItem("last_code_processed", code);
+          window.history.replaceState({}, document.title, window.location.pathname);
           router.replace("/dashboard");
         }
       } catch (err) {
         setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
         console.error("Redirect page: Exception:", err);
-        setTimeout(() => router.replace("/"), 3000);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => router.replace("/login"), 1500);
       }
     })();
   }, [router]);
