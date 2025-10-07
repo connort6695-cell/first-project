@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { MagicLinkHandler } from "@/components/MagicLinkHandler";
 import { SupabaseTest } from "@/components/SupabaseTest";
+import { CurrentUrlDisplay } from "@/components/CurrentUrlDisplay";
 
 export default function Home() {
   return (
@@ -11,10 +12,8 @@ export default function Home() {
       <Suspense fallback={null}>
         <SupabaseTest />
         <MagicLinkHandler />
+        <CurrentUrlDisplay />
       </Suspense>
-      <div className="alert alert-info">
-        <p className="text-sm">Current URL: {typeof window !== 'undefined' ? window.location.href : 'SSR'}</p>
-      </div>
       <Card title="Welcome to your app" actions={<Link href="/login"><Button>Get started</Button></Link>}>
         <p>Next.js + Tailwind CSS + DaisyUI is configured.</p>
       </Card>
