@@ -33,18 +33,26 @@ export default function RedirectPage() {
     (async () => {
       try {
         setStatus("Exchanging code for session...");
+        console.log("Redirect page: Processing code =", code);
+        console.log("Redirect page: Full URL =", window.location.href);
         
-        const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        
+        console.log("Redirect page: Response data =", data);
+        console.log("Redirect page: Response error =", error);
         
         if (error) {
           setStatus(`Error: ${error.message}`);
+          console.error("Redirect page: Auth error:", error);
           setTimeout(() => router.replace("/"), 3000);
         } else {
           setStatus("Success! Redirecting to dashboard...");
+          console.log("Redirect page: Success! Session =", data.session);
           router.replace("/dashboard");
         }
       } catch (err) {
         setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        console.error("Redirect page: Exception:", err);
         setTimeout(() => router.replace("/"), 3000);
       }
     })();
